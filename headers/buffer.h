@@ -6,10 +6,11 @@
 #include <stdio.h>
 #include <unistd.h>
 
-typedef struct buffer_t* BUFFER;
+typedef struct buffer_t* Buffer;
 
-BUFFER create_buffer (int fildes, int nbytes);
-int destroy_buffer(BUFFER buf);
-int readln(BUFFER buffer, char* buf, int max);
+Buffer create_buffer (int fildes, int nbytes);
+int destroy_buffer(Buffer buf);
+int get_fildes(Buffer buf);
+int readln(Buffer buffer, char* buf, int max);
 
 #endif

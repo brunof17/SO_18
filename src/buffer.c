@@ -8,8 +8,8 @@ struct buffer_t{
     int lidas;
 };
 
-BUFFER create_buffer (int fildes, int nbytes){
-    BUFFER buf = malloc(sizeof(BUFFER));
+Buffer create_buffer (int fildes, int nbytes){
+    Buffer buf = malloc(sizeof(Buffer));
     buf->buf = malloc(nbytes);
     buf->fildes = fildes;
     buf->nbytes = nbytes;
@@ -19,13 +19,19 @@ BUFFER create_buffer (int fildes, int nbytes){
     return buf;
 }
 
-int destroy_buffer(BUFFER buf){
+int destroy_buffer(Buffer buf){
     free(buf->buf);
     free(buf);
     return 0;
 }
 
-int readln(BUFFER buffer, char* buf, int max){
+int get_fildes(Buffer buffer){
+    if(buffer)
+        return buffer->fildes;
+    return -1;
+}
+
+int readln(Buffer buffer, char* buf, int max){
     int i = 0;
     if(!buffer){
         perror("Null buffer");
@@ -52,4 +58,6 @@ int readln(BUFFER buffer, char* buf, int max){
         buf[i-1] = 0;
     }
     return buffer->lidas;
-}   
+}
+
+
