@@ -1,4 +1,4 @@
-#include "../headers/buffer.h"
+#include "headers/buffer.h"
 
 struct buffer_t{
     char* buf;
@@ -10,7 +10,7 @@ struct buffer_t{
 
 Buffer create_buffer (int fildes, int nbytes){
     Buffer buf = malloc(sizeof(Buffer));
-    buf->buf = malloc(nbytes);
+    buf->buf = malloc(nbytes+1);
     buf->fildes = fildes;
     buf->nbytes = nbytes;
     buf->index = 0;

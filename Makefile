@@ -10,11 +10,10 @@ LIBS =
 processor: setup $(OBJ_FILES)
 			$(CC) $(CFLAGS) $(PFLAGS) $(LIBS) -o processor $(OBJ_FILES)
 
-
 setup:
 	mkdir -p obj
 
-debug: CFLAGS := -g -O0
+debug: CFLAGS := -g -O0 -std=c11
 debug: processor
 
 obj/%.o: src/%.c

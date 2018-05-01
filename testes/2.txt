@@ -1,0 +1,8 @@
+ola
+estou
+aqui
+para
+testar 
+o
+resize do array antes dos comandos
+$ ls

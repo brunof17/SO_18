@@ -1,0 +1,4 @@
+Vamos testar o sort
+$ grep . Makefile
+Sort
+$| sort
