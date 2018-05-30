@@ -9,7 +9,7 @@ struct buffer_t{
 };
 
 Buffer create_buffer (int fildes, int nbytes){
-    Buffer buf = malloc(sizeof(Buffer));
+    Buffer buf = malloc(sizeof(struct buffer_t));
     buf->buf = malloc(nbytes+1);
     buf->fildes = fildes;
     buf->nbytes = nbytes;
@@ -55,7 +55,7 @@ int readln(Buffer buffer, char* buf, int max){
         if(buf[i-1] == '\n') break;
     }
     if(i < max){
-        buf[i-1] = 0;
+        buf[i-1] = '\0';
     }
     return buffer->lidas;
 }

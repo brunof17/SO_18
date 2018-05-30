@@ -1,4 +1,6 @@
-Vamos testar o sort
-$ grep . Makefile
-Sort
-$| sort
+Este comando lista os ficheiros:
+$ ls
+Agora podemos ordenar os ficheiros:
+$| sorte
+E escolher o primeiro:
+$| head -1

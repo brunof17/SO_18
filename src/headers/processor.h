@@ -3,10 +3,10 @@
 
 #include <stdio.h>
 #include <fcntl.h>
-#include <string.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <ctype.h>
+#include <string.h>
 #include "buffer.h"
 #include "utils.h"
 

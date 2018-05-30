@@ -1,0 +1,71 @@
+Vamos testar mais de 10 comandos antes
+$ ls
+>>>
+enunciado-so-2017-18.pdf
+Makefile
+obj
+processor
+README.md
+src
+tentar.txt
+testes
+<<<
+Outro
+$ pwd
+>>>
+/home/bruno/Projetos/SO_18
+<<<
+Outro
+$ ps
+>>>
+  PID TTY          TIME CMD
+ 2069 pts/1    00:00:00 processor
+ 2072 pts/1    00:00:00 ps
+23750 pts/1    00:00:02 zsh
+<<<
+Outro
+$ date
+>>>
+seg mai 28 16:42:23 WEST 2018
+<<<
+Outro
+$ uname -a
+>>>
+Linux bruno-pc 4.4.131-2-MANJARO #1 SMP PREEMPT Fri May 11 07:11:18 UTC 2018 x86_64 GNU/Linux
+<<<
+Outro
+$ uname
+>>>
+Linux
+<<<
+Outro
+$ ls -l
+>>>
+total 120
+-rw-r--r-- 1 bruno bruno 74687 abr 27 14:54 enunciado-so-2017-18.pdf
+-rw-r--r-- 1 bruno bruno   371 mai  4 12:03 Makefile
+drwxr-xr-x 2 bruno bruno  4096 mai 28 16:40 obj
+-rwxr-xr-x 1 bruno bruno 18432 mai 28 16:41 processor
+-rw-r--r-- 1 bruno bruno   302 mai  1 01:44 README.md
+drwxr-xr-x 3 bruno bruno  4096 mai 28 16:40 src
+-rw-r--r-- 1 bruno bruno   325 mai 19 23:20 tentar.txt
+drwxr-xr-x 2 bruno bruno  4096 mai 28 16:42 testes
+<<<
+Outro
+$ python --version
+>>>
+Python 3.6.5
+<<<
+Outro
+$ ls -a /etc/passwd
+>>>
+/etc/passwd
+<<<
+Outro
+$ sleep 2
+Outro
+$10| head -2
+>>>
+enunciado-so-2017-18.pdf
+Makefile
+<<<

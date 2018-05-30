@@ -37,9 +37,9 @@ Command create_command(){
     cmd->command = NULL;
     cmd->dep = -1;
     cmd->lines_before = malloc(sizeof(char *) * (cmd->l_max));
-    for(int i = 0 ; i < cmd->l_max ; ++i) cmd->lines_before[0] = NULL;
+    for(int i = 0 ; i < cmd->l_max ; ++i) cmd->lines_before[i] = NULL;
     cmd->output_lines = malloc(sizeof(char *) * (cmd->o_max));
-    for(int i = 0 ; i < cmd->o_max ; ++i) cmd->output_lines[0] = NULL;
+    for(int i = 0 ; i < cmd->o_max ; ++i) cmd->output_lines[i] = NULL;
     cmd->l_num = 0;
     cmd->o_num = 0;
     return cmd;
@@ -87,7 +87,7 @@ void split_command_line(Command cmd){
     string = (char*) malloc(strlen(cmd->command_line)+1);
     string = strcpy(string,cmd->command_line);
 
-    cmd->command = (char**) malloc(sizeof(char*) * argm);
+    cmd->command = malloc(sizeof(char*) * argm);
 
     if(string){
         to_free = string;
@@ -115,7 +115,6 @@ void split_command_line(Command cmd){
         free(to_free);
     }
 
-    // return cmd;
 }
 
 void update_command(Command cmd, char* cmd_str){
@@ -128,52 +127,41 @@ void update_command(Command cmd, char* cmd_str){
 
 void update_outputs(Command cmd, char* line, int r){
     if(!cmd) return;
-    printf("LINE:%s\n|||||||\n",line);
-    
+
     int size;
     char** r_aux;
-    char* cpy_line = malloc(strlen(line) + 1);
-    cpy_line = strcpy(cpy_line, line);
-//    char* token = strtok(cpy_line,"\n");
-  //  while(token != NULL){
-        if(cmd->o_max * 0.8 < cmd->o_num){
-            cmd->o_max *= 2;
-            r_aux = realloc(cmd->output_lines, sizeof(char*) * cmd->o_max);
-            if(!r_aux){
-                cmd->o_max *= 0.5;
-                //TODO CALL ERROR
-                return;
-            }
-            cmd->output_lines = r_aux;
+    if(cmd->o_max * 0.8 < cmd->o_num){
+        cmd->o_max *= 2;
+        r_aux = realloc(cmd->output_lines, sizeof(char*) * cmd->o_max);
+        if(!r_aux){
+            cmd->o_max *= 0.5;
+            //TODO CALL ERROR
+            return;
         }
-        size = cmd->o_num;
-        cmd->output_lines[size] = malloc(strlen(cpy_line) +1);
-        cmd->output_lines[size] = strncpy(cmd->output_lines[size],cpy_line, r);
-        ++cmd->o_num;
-    //    token = strtok(NULL,"\n");
-   // }
+        cmd->output_lines = r_aux;
+    }
+    size = cmd->o_num;
+    cmd->output_lines[size] = malloc(strlen(line) +1);
+    cmd->output_lines[size] = strncpy(cmd->output_lines[size],line, r);
+    ++cmd->o_num;
 }
 
-//Prints to stdout, maybe change output to file 
 void print_command(Command cmd,int rollback){
     if(!cmd) printf("Error printing command");
     for(int i = 0 ; i < cmd->l_num ; ++i){
         printf("%s\n",cmd->lines_before[i]);
     }
     printf("%s\n",cmd->command_line);
-    if(!rollback){
-        if(cmd->o_num)  printf(">>>");
-        for(int i = 0; i < cmd->o_num ; ++i){
-            printf("\n%s",cmd->output_lines[i]);
-        }
-        if(cmd->o_num)  printf("<<<\n");
+    if(cmd->o_num)  printf(">>>");
+    for(int i = 0; i < cmd->o_num ; ++i){
+        printf("\n%s",cmd->output_lines[i]);
     }
+    if(cmd->o_num)  printf("<<<\n");
 }
 
-//Prints to stdout, maybe change output to file 
 void print_notebook(Notebook nb){
     if(!nb) printf("Null notebook, cannot print");
-    //    printf("Notebook name: %s\n",nb->filename);
+    if(nb->rollback) return;
     for(int i = 0 ; i < nb->command_size ; ++i ){
         print_command(nb->commands[i],nb->rollback);  
     }
@@ -188,7 +176,7 @@ Notebook create_notebook(char* filename){
     Notebook nb = (Notebook) malloc(sizeof(struct notebook));
     nb->command_max = I_MAX_CMD;
     nb->command_size = 0;
-    nb->commands = malloc(sizeof(Command)*5);
+    nb->commands = malloc(sizeof(Command)*nb->command_max);
     nb->file = create_buffer(nb_fd,READ_SIZE);
     nb->filename = (char*)  malloc(strlen(filename)+1);
     nb->filename = strcpy(nb->filename, filename);
@@ -203,90 +191,109 @@ void populate_notebook(Notebook nb){
     }
     char buf[1024] = {0};
     int r;
+    int prev_out = FALSE;
+    Command* aux;
     nb->commands[nb->command_size] = create_command(); 
+    
 
     //TODO falta resize do array dos Command
-    //TODO falta verificar se o ficheiro tem os >>> <<< e ignorar texto entre estes
     while(1){
         r = readln(nb->file,buf,1024);
         if ( r == 0) break;
 
         // quando encontrar uma linha que começe por $, adicionar ao commando, e depois passar para o proximo "commando"
+        if(buf[0] == '>'){
+            prev_out = TRUE;
+        }
         if(buf[0] == '$'){
             update_command(nb->commands[nb->command_size],buf);
+            if(nb->command_max * 0.6 < nb->command_size){
+                nb->command_max *= 2;
+                aux = realloc(nb->commands, sizeof(Command)*nb->command_max);
+                if(aux == NULL){
+                    nb->command_max *= 0.5;
+                    nb->rollback = TRUE;
+                }
+                nb->commands = aux;
+            }
             ++nb->command_size;
             nb->commands[nb->command_size] = create_command();
-        }else{
+        }else if(!prev_out){
             update_lines(nb->commands[nb->command_size],buf);
         }  
+        if(buf[0] == '<'){
+            prev_out = FALSE;
+        }
 
     }
 }
 
-void exec_cmd(Command cmd, Command dep){
+int exec_cmd(Command cmd, Command dep){
     int status;
-    int r;
+    int r = 0;
+    printf("Execunting: %s\n", cmd->command_line);
 
     int pd_in[2], pd_out[2];
     char buf[1024];
-
-    pipe(pd_in);
-    pipe(pd_out);
+    
+    if(pipe(pd_in) == -1) perror("Error on pipe creation (in)");
+    if(pipe(pd_out) == -1) perror("Error on pipe creation (out)");
 
     if(fork() == 0){
         //Fechar escrita do pipe in
         close(pd_in[1]);
         if(dep != NULL){
-            //Duplicar a leitura do pipe in  como stdin
+            //Duplicar leitura do pipe in como stdin
             dup2(pd_in[0],0);
         }
-        //Fechar leitura do pipe in
+        //Fechar entrada do pipe in
         close(pd_in[0]);
 
 
-        //Fechar leitura do pipe out ja que nao se usa
+        //Fechar a leitura do pipe out
         close(pd_out[0]);
-        //Duplicar a escrita do pipe out como stdout
+        //Duplicar a escrita do pipe como stdout
         dup2(pd_out[1],1);
-        //Fechar a escrita do pipe out por causa do EOF
+        //Fechar a escrita do pipe
         close(pd_out[1]);
-
+        
         r = execvp(cmd->command[0],cmd->command);
+        printf("Command %s\n",cmd->command_line);
         perror("Erro no exec");
         _exit(r);
 
     }else{
-        if(dep == NULL){
-            close(pd_in[1]);
-            close(pd_in[0]);
-            close(pd_out[1]);
-        }else{
-            close(pd_in[0]);
+        close(pd_in[0]);
+        if(dep && dep->output_lines){
             for(int i = 0 ; dep->output_lines[i] != NULL ; ++i){
-                printf("INPUT : \n%s\n",dep->output_lines[i]);
-                write(pd_in[1],dep->output_lines[i], strlen(dep->output_lines[i])+1);
+                write(pd_in[1],dep->output_lines[i], strlen(dep->output_lines[i]));
             }
-            close(pd_in[1]);
-            close(pd_out[1]);
-        }    
+        }
+        close(pd_in[1]);
+        
         wait(&status);
-        if(WIFEXITED(status)){
-            printf("Saiu com %d\n",WEXITSTATUS(status));
+        close(pd_out[1]);
+        if(WIFEXITED(status) && WEXITSTATUS(status)== 0){
             while((r = read(pd_out[0],buf,1024))){
                 if(r <= 0) break;
-                printf("READ: %d CENAS: \n %s\n",r, buf);
+                buf[r] = '\0';
                 update_outputs(cmd, buf, r);
             }
         }else{
-            printf("Saiu com %d\n",WEXITSTATUS(status));
+            while((r = read(pd_out[0], buf, 1024))){
+                if(r <= 0) break;
+                buf[r] = '\0';
+                printf("%s\n",buf);
+            }
+            return FALSE;
         }
+        close(pd_out[0]);
     }
-
+    return TRUE;
 }
 
 
 void start_exec(Notebook nb){
-    //dependência do commando anterior
     int dep;
     Command prev = NULL;
     if(!nb){
@@ -294,42 +301,63 @@ void start_exec(Notebook nb){
         return;
     }
 
-
     for(int i = 0 ; i < nb->command_size ; ++i){
         dep = nb->commands[i]->dep;
-        // dependencies:
-        ////        pipe(pd);
-        if(dep == -1) { perror("Erro nas dependencias");
-        }
+        
+        if(dep == -1) perror("Erro nas dependencias");
+
         if(dep != 0){
             // check bondaries
             if( i >= dep ? TRUE : FALSE){
                 //Get output from previous as input for the pipe
-                printf("Dependencia de %d no commando\n>\n %s\n>\n",dep,nb->commands[i]->command_line);
                 prev = nb->commands[i-dep];
             }else{
-                printf("Dependencia no %dº commando out_of_boundaries (%d)\n",i+1, dep);
                 nb->rollback = TRUE;
                 //TODO rollbackFile()
                 break;
             } 
         }
-        else{
-            printf("Sem dependencia no commando\n>\n %s \n>\n",nb->commands[i]->command_line);
 
-            //            close
+        if(!exec_cmd(nb->commands[i],prev)){
+            nb->rollback = TRUE;
+            break;
         }
-
-        exec_cmd(nb->commands[i],prev);
     }    
-    //Go through commands array
-    //Execute each command
-    //may need inputs from previous command.
-    //father has to wait for children, because the next command may depend on the previous
-    //store results in pipe
-    //get results, store them in notebook
-    //
+}
 
+void write_command(Command cmd, int fd){
+
+    for(int i = 0 ; i < cmd->l_num ; ++i){
+        write(fd, cmd->lines_before[i], strlen(cmd->lines_before[i]));
+        write(fd, "\n", 1);
+    }
+
+    write(fd, cmd->command_line, strlen(cmd->command_line));
+    write(fd, "\n", 1);
+
+    if(cmd->o_num) write(fd, ">>>", 3);
+
+    for(int i = 0 ; i < cmd->o_num ; ++i){
+        write(fd, "\n", 1);
+        write(fd, cmd->output_lines[i], strlen(cmd->output_lines[i]));
+    }
+        
+    if(cmd->o_num){
+        write(fd, "<<<", 3);
+        write(fd, "\n", 1);
+    }
+
+    
+}
+
+void override_file(Notebook nb){
+    
+    if(!nb) return;
+    if(nb->rollback) return;
+    int fd = open(nb->filename, O_WRONLY | O_TRUNC);
+    for(int i = 0 ; i < nb->command_size ; ++i){
+        write_command(nb->commands[i],fd);
+    }
 
 }
 
@@ -348,16 +376,20 @@ int main(int argc, char** argv) {
     populate_notebook(nb);
     //    printf("ANTES EXEC!!!:%s\n",nb->commands[1]->command[0]);
 
-    // Close file
+    // Close file, by getting the file descriptor from the buffer_t struct
     int fd = get_fildes(nb->file); 
     close(fd);
 
-    print_notebook(nb);
+//    print_notebook(nb);
 
     // Reopen file for writing
     start_exec(nb);
     // Exec commands and write outputs
     print_notebook(nb);
+    
+    override_file(nb);
+    
+    close(fd);    
 
     return 0;
 }
