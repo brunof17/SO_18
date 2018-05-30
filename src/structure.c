@@ -1,13 +1,5 @@
 #include "headers/structure.h"
 
-
-#define READ_SIZE 1024
-#define I_MAX_CMD 5
-#define I_MAX_BEFORE 5
-#define I_MAX_OUT 5
-
-static void print_command(Command cmd,int rollback);
-
 Notebook create_notebook(char* filename){
     int nb_fd = open(filename, O_RDONLY);
     if(nb_fd < 0){

@@ -1,13 +1,5 @@
 #include "headers/buffer.h"
 
-struct buffer_t{
-    char* buf;
-    int fildes;
-    int nbytes;
-    int index;
-    int lidas;
-};
-
 Buffer create_buffer (int fildes, int nbytes){
     Buffer buf = malloc(sizeof(struct buffer_t));
     buf->buf = malloc(nbytes+1);

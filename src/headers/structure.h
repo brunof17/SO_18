@@ -11,6 +11,10 @@
 
 #define FALSE 0
 #define TRUE !(FALSE)
+#define READ_SIZE 1024
+#define I_MAX_CMD 5
+#define I_MAX_BEFORE 5
+#define I_MAX_OUT 5
 
 typedef struct command{
     char** lines_before;
