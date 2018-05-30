@@ -1,5 +1,7 @@
 #include "headers/structure.h"
 
+static void print_command(Command cmd,int rollback);
+
 Notebook create_notebook(char* filename){
     int nb_fd = open(filename, O_RDONLY);
     if(nb_fd < 0){

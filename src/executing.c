@@ -38,7 +38,7 @@ void start_exec(Notebook nb){
 static int exec_cmd(Command cmd, Command dep){
     int status;
     int r = 0;
-    printf("Execunting: %s\n", cmd->command_line);
+    printf("Executing: %s\n", cmd->command_line);
 
     int pd_in[2], pd_out[2];
     char buf[1024];
