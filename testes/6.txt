@@ -7,7 +7,6 @@ obj
 processor
 README.md
 src
-tentar.txt
 testes
 <<<
 Outro
@@ -19,14 +18,14 @@ Outro
 $ ps
 >>>
   PID TTY          TIME CMD
- 2069 pts/1    00:00:00 processor
- 2072 pts/1    00:00:00 ps
-23750 pts/1    00:00:02 zsh
+ 3099 pts/1    00:00:00 zsh
+13505 pts/1    00:00:00 processor
+13508 pts/1    00:00:00 ps
 <<<
 Outro
 $ date
 >>>
-seg mai 28 16:42:23 WEST 2018
+qua mai 30 18:54:14 WEST 2018
 <<<
 Outro
 $ uname -a
@@ -41,14 +40,13 @@ Linux
 Outro
 $ ls -l
 >>>
-total 120
+total 116
 -rw-r--r-- 1 bruno bruno 74687 abr 27 14:54 enunciado-so-2017-18.pdf
 -rw-r--r-- 1 bruno bruno   371 mai  4 12:03 Makefile
-drwxr-xr-x 2 bruno bruno  4096 mai 28 16:40 obj
--rwxr-xr-x 1 bruno bruno 18432 mai 28 16:41 processor
+drwxr-xr-x 2 bruno bruno  4096 mai 30 18:53 obj
+-rwxr-xr-x 1 bruno bruno 18544 mai 30 18:53 processor
 -rw-r--r-- 1 bruno bruno   302 mai  1 01:44 README.md
-drwxr-xr-x 3 bruno bruno  4096 mai 28 16:40 src
--rw-r--r-- 1 bruno bruno   325 mai 19 23:20 tentar.txt
+drwxr-xr-x 3 bruno bruno  4096 mai 30 18:53 src
 drwxr-xr-x 2 bruno bruno  4096 mai 28 16:42 testes
 <<<
 Outro

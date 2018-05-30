@@ -1,4 +1,16 @@
 Testar comandos sem dependências
 $ ls
+>>>
+enunciado-so-2017-18.pdf
+Makefile
+obj
+processor
+README.md
+src
+testes
+<<<
 Outro comando sem dependências
 $ pwd
+>>>
+/home/bruno/Projetos/SO_18
+<<<

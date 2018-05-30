@@ -8,7 +8,8 @@
 #include <ctype.h>
 #include <string.h>
 #include "buffer.h"
-#include "utils.h"
-
+#include "structure.h"
+#include "compiling.h"
+#include "executing.h"
 
 #endif
