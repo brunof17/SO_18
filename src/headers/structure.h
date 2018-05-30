@@ -38,6 +38,9 @@ typedef struct notebook{
     int rollback;
 }* Notebook;
 
+static void print_command(Command cmd,int rollback);
+
+
 Notebook create_notebook(char* filename);
 Command create_command();
 void print_notebook(Notebook nb);
