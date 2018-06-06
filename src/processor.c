@@ -6,29 +6,37 @@ int main(int argc, char** argv) {
         printf("Usage: ./processor <filename>\n");
         _exit(-1);
     }
-
-    //  Create notebook with the corresponding file
-    Notebook nb = create_notebook(argv[1]);
-
-
-    //Populate struct with notebook informations
-    populate_notebook(nb);
-    //    printf("ANTES EXEC!!!:%s\n",nb->commands[1]->command[0]);
-
-    // Close file, by getting the file descriptor from the buffer_t struct
-    int fd = get_fildes(nb->file); 
-    close(fd);
-
-//    print_notebook(nb);
-
-    // Reopen file for writing
-    start_exec(nb);
-    // Exec commands and write outputs
-    print_notebook(nb);
     
-    override_file(nb);
-    
-    close(fd);    
+    int nbs = argc - 1;
 
+    for(int i = 0 ; i < nbs ; ++i){
+        int pid = fork();
+        if(pid == 0){
+            //Create notebook with the corresponding file
+            Notebook nb = create_notebook(argv[i+1]);
+
+            //Populate struct with notebook informations
+            populate_notebook(nb);
+
+            //Close file, by getting the file descriptor from the buffer_t struct
+            int fd = get_fildes(nb->file); 
+            close(fd);
+            
+            //Execute comands
+            start_exec(nb);
+    
+            //Write new information
+            override_file(nb);
+    
+            close(fd);    
+
+            _exit(0);
+        }else{
+            printf("Foi criado o processo %d, para executar o notebook \"%s\"\n",pid, argv[i+1]);
+        }
+    }
+    for(int i = 0 ; i < nbs ; ++i){
+        wait(NULL);
+    }
     return 0;
 }

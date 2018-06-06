@@ -4,6 +4,11 @@ static void write_command(Command cmd, int fd);
 static int exec_cmd(Command cmd, Command dep);
 static int update_outputs(Command cmd, char* line, int r);
 
+/**
+ *  Execução de um dado notebook
+ *  
+ *  @param nb notebook a executar
+ */
 void start_exec(Notebook nb){
     int dep;
     Command prev = NULL;
@@ -30,15 +35,22 @@ void start_exec(Notebook nb){
 
         if(!exec_cmd(nb->commands[i],prev)){
             nb->rollback = TRUE;
+            printf("Erro no ficheiro %s\n",nb->filename);
             break;
         }
     }    
 }
 
+/**
+ *  Executar um comando, podendo este ter dependências. Caso não existam dependências o valor de dep deve ser NULL
+ *
+ *  @param cmd Command a executar
+ *  @param dep Command dependência
+ */
 static int exec_cmd(Command cmd, Command dep){
     int status;
     int r = 0;
-    printf("Executing: %s\n", cmd->command_line);
+//    printf("Executing: %s\n", cmd->command_line);
 
     int pd_in[2], pd_out[2];
     char buf[1024];
@@ -98,6 +110,11 @@ static int exec_cmd(Command cmd, Command dep){
     return TRUE;
 }
 
+/**
+ *  Escrever as novas informações no ficheiro
+ *
+ *  @param nb Notebook a escrever
+ */
 void override_file(Notebook nb){
     
     if(!nb) return;
@@ -109,6 +126,12 @@ void override_file(Notebook nb){
 
 }
 
+/**
+ *  Escrever um comando para o ficheiro
+ *
+ *  @param cmd Command a escrever
+ *  @param fd Descritor de ficheiro
+ */
 static void write_command(Command cmd, int fd){
 
     for(int i = 0 ; i < cmd->l_num ; ++i){
@@ -130,10 +153,16 @@ static void write_command(Command cmd, int fd){
         write(fd, "<<<", 3);
         write(fd, "\n", 1);
     }
-
-    
 }
 
+
+/**
+ *  Atualizar output de um dado comando
+ *
+ *  @param cmd Command a executar
+ *  @param line Linha a atualizar
+ *  @param r Numero de bytes a copiar de line
+ */
 static int update_outputs(Command cmd, char* line, int r){
     if(!cmd) return FALSE;
 

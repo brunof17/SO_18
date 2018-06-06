@@ -1,10 +1,10 @@
-Este comando lista os ficheiros:
+Este comando lista ficheiros:
 $ ls
 >>>
 enunciado-so-2017-18.pdf
 Makefile
+notebook
 obj
-processor
 README.md
 src
 testes
@@ -14,8 +14,8 @@ $| sort
 >>>
 enunciado-so-2017-18.pdf
 Makefile
+notebook
 obj
-processor
 README.md
 src
 testes

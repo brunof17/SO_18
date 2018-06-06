@@ -1,41 +1,10 @@
 Vamos testar comandos com dependencias maiores que 1
+E com várias linhas de descrição
 $ ls
->>>
-enunciado-so-2017-18.pdf
-Makefile
-obj
-processor
-README.md
-src
-testes
-<<<
-Agora fazemos mais um comando qualquer
+Agora fazemos mais um comando aleatório:
 $ pwd
->>>
-/home/bruno/Projetos/SO_18
-<<<
-Agora pedimos o ls
 $2| sort
->>>
-enunciado-so-2017-18.pdf
-Makefile
-obj
-processor
-README.md
-src
-testes
-<<<
-E tentamos o ls outra vez
+E tentamos o ls outra vez:
 $3| head -2
->>>
-enunciado-so-2017-18.pdf
-Makefile
-<<<
-Mais um comando random
+Mais um comando para verificar a execução:
 $ ps
->>>
-  PID TTY          TIME CMD
- 3099 pts/1    00:00:00 zsh
-13356 pts/1    00:00:00 processor
-13361 pts/1    00:00:00 ps
-<<<

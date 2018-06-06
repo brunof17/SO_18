@@ -1,7 +1,13 @@
 #include "headers/structure.h"
 
-static void print_command(Command cmd,int rollback);
+static void print_command(Command cmd);
 
+/**
+ *  Criação de instancia de um Notebook
+ *
+ *  @param filename nome do ficheiro a ser processado
+ *  @return instância de Notebook
+ */
 Notebook create_notebook(char* filename){
     int nb_fd = open(filename, O_RDONLY);
     if(nb_fd < 0){
@@ -19,6 +25,12 @@ Notebook create_notebook(char* filename){
     return nb;
 }
 
+
+/**
+ *  Criação de instancia de um Command
+ *
+ *  @return instância de Command
+ */
 Command create_command(){
     Command cmd = malloc(sizeof(struct command));
     cmd->l_max = I_MAX_BEFORE;
@@ -35,15 +47,25 @@ Command create_command(){
     return cmd;
 }
 
+/**
+ *  Imprimir informações presentes num dado Noteboook
+ *
+ *  @param nb Notebook a ser imprimido
+ */
 void print_notebook(Notebook nb){
     if(!nb) printf("Null notebook, cannot print");
     if(nb->rollback) return;
     for(int i = 0 ; i < nb->command_size ; ++i ){
-        print_command(nb->commands[i],nb->rollback);  
+        print_command(nb->commands[i]);  
     }
 }
 
-static void print_command(Command cmd,int rollback){
+/**
+ *  Imprimir informações de um dado comando
+ *
+ *  @param cmd Command a ser imprimido
+ */
+static void print_command(Command cmd){
     if(!cmd) printf("Error printing command");
     for(int i = 0 ; i < cmd->l_num ; ++i){
         printf("%s\n",cmd->lines_before[i]);

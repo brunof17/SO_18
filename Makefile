@@ -8,7 +8,8 @@ PFLAGS =
 LIBS = 
 
 processor: setup $(OBJ_FILES)
-			$(CC) $(CFLAGS) $(PFLAGS) $(LIBS) -o processor $(OBJ_FILES)
+			$(CC) $(CFLAGS) $(PFLAGS) $(LIBS) -o notebook $(OBJ_FILES)
+			@echo "To execute, run ./notebook <filenames>"
 
 setup:
 	mkdir -p obj
@@ -21,6 +22,6 @@ obj/%.o: src/%.c
 
 clean: 
 	-@rm -rf obj
-	-@rm processor
+	-@rm notebook
 
 

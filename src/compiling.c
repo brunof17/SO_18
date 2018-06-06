@@ -5,7 +5,12 @@ static void update_lines(Command cmd, char* line);
 static void split_command_line(Command cmd);
 static int verify_dependencies(char* command);
 
-    
+
+/**
+ *  Função para preencher o Notebook com as informações do ficheiro
+ *  
+ *  @param nb Notebook a preencher
+ */
 void populate_notebook(Notebook nb){
     if(!nb){
         printf("Notebook not defined\n");
@@ -18,12 +23,14 @@ void populate_notebook(Notebook nb){
     nb->commands[nb->command_size] = create_command(); 
     
     while(1){
+        // leitura de uma linha do ficheiro com um máximo de 1024
         r = readln(nb->file,buf,1024);
         if ( r == 0) break;
-        // quando encontrar uma linha que começe por $, adicionar ao commando, e depois passar para o proximo "commando"
+        // Buf contem > no inicio, não vamos guardar informações
         if(buf[0] == '>'){
             prev_out = TRUE;
         }
+        // Guardar informações de um comando
         if(buf[0] == '$'){
             update_command(nb->commands[nb->command_size],buf);
             if(nb->command_max * 0.6 < nb->command_size){
@@ -38,9 +45,11 @@ void populate_notebook(Notebook nb){
             }
             ++nb->command_size;
             nb->commands[nb->command_size] = create_command();
+        // Se não for output de comando
         }else if(!prev_out){
             update_lines(nb->commands[nb->command_size],buf);
         }  
+        // Buf contem < no inicio, vamos guardar informações;
         if(buf[0] == '<'){
             prev_out = FALSE;
         }
@@ -48,6 +57,12 @@ void populate_notebook(Notebook nb){
     }
 }
 
+/**
+ *  Adicionar uma linha da descrião a struct Command
+ *  
+ *  @param cmd Command a dar update
+ *  @param line Linha a adicionar
+ */
 static void update_lines(Command cmd, char* line){
     char** aux;
     if(!cmd) return;
@@ -67,6 +82,12 @@ static void update_lines(Command cmd, char* line){
     ++cmd->l_num; 
 }
 
+/**
+ *  Update da informação de um comando na struct Command
+ *
+ *  @param cmd Command a dar update
+ *  @param line Linha do comando
+ */
 static void update_command(Command cmd, char* cmd_str){
     if(!cmd) return;
     cmd->command_line = (char*) malloc(strlen(cmd_str) +1);
@@ -75,7 +96,11 @@ static void update_command(Command cmd, char* cmd_str){
     cmd->dep = verify_dependencies(cmd->command_line); 
 }
 
-
+/**
+ *  Função auxiliar, que permite a separação da linha do comando 
+ *  
+ *  @param cmd Command a dar split
+ */
 static void split_command_line(Command cmd){
     char* token, *string, *to_free;
     char** r_aux;
@@ -114,6 +139,11 @@ static void split_command_line(Command cmd){
 
 }
 
+/**
+ *  Verificar dependências de um dado comando
+ *
+ *  @param command Linha do comando
+ */
 static int verify_dependencies(char* command){
     if(command[1] == '|') return 1;
     if(command[1] == ' ') return 0;
